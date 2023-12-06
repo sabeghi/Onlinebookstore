@@ -1,13 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Book, BookDocument } from './schemas/book.schema';
 import { CreateBookDTO } from './dtos/create-book.dto';
 import { FilterBookDTO } from './dtos/filter-book.dto';
+import { RedisService } from 'nestjs-redis';
 
 @Injectable()
 export class BookService {
-  constructor(@InjectModel('Book') private readonly bookModel: Model<BookDocument>) { }
+  constructor(@InjectModel('Book') private readonly bookModel: Model<BookDocument>
+                                  //  ,private readonly redisService: RedisService
+                                  ) { }
 
   async getFilteredBooks(filterBookDTO: FilterBookDTO): Promise<Book[]> {
     const { rate, search } = filterBookDTO;
@@ -34,7 +37,17 @@ export class BookService {
   }
 
   async getBook(id: string): Promise<Book> {
+    const cachedBook = false;//await this.getCachedBook(id);
+
+    if (cachedBook) {
+      console.log(`------------In Redis Cache ------------`)
+      return cachedBook;
+    }
+
     const book = await this.bookModel.findById(id).exec();
+    if (!book) {
+      throw new NotFoundException('Book not found :(');
+    }
     return book;
   }
 
@@ -52,5 +65,17 @@ export class BookService {
   async deleteBook(id: string): Promise<any> {
     const deletedBook = await this.bookModel.findByIdAndRemove(id);
     return deletedBook;
+  }
+
+  private async getCachedBook(bookId: string): Promise<Book | null> {
+    const client = null;//this.redisService.getClient();
+    const cachedBook = await client.get(bookId);
+
+    return cachedBook ? JSON.parse(cachedBook) : null;
+  }
+
+  private async cacheBook(bookId: string, book: Book): Promise<void> {
+    const client = null;// this.redisService.getClient();
+    await client.set(bookId, JSON.stringify(book));
   }
 }
