@@ -22,7 +22,7 @@ export class BookService {
     }
 
     if (rate) {
-      books = books.filter(book => book.rate === rate)
+      books = books.filter(book => book.rate == rate)
     }
 
     return books;

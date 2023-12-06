@@ -11,7 +11,7 @@ export class CartController {
   constructor(private cartService: CartService) { }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.User)
+  //@Roles(Role.User)
   @Post('/')
   async addItemToCart(@Request() req, @Body() itemDTO: ItemDTO) {
     const userId = req.user.userId;
