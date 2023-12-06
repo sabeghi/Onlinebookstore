@@ -45,6 +45,12 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Set mongodb connection string
+
+In app.module.ts file change
+ MongooseModule.forRoot('mongodb://127.0.0.1:27017/store'),
+ to your connection string
+
 ## Api Document
 
 Visit this address for get necessary data for api
