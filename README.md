@@ -45,6 +45,11 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Api Document
+
+Visit this address for get necessary data for api
+http://localhost:3000/api
+
 ## Test
 
 ```bash
